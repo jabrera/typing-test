@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Typing Test</title>
+	<script src="jquery.min.js"></script>
+	<style>
+		body {
+			margin: 120px;
+		}
+		.words {
+			max-width: 500px;
+			margin: 0px auto;
+			background: #e9e9e9;
+			border-radius: 3px 3px 0px 0px;
+			max-height: 170px;
+			overflow: hidden;
+			overflow-y: scroll;
+			padding: 12px;
+			padding-bottom: 150px;
+			text-align: center;
+			box-sizing: border-box;
+		}
+		.words::-webkit-scrollbar {
+			width: 0px;
+		}
+		.words span {
+			display: inline-block;
+			font-size: 24px;
+			margin: 12px;
+		}
+		.words span.selected {
+			background: rgba(0,0,0,.2);
+			border-radius: 3px;
+			padding: 12px;
+			margin: 0px;
+			color: white;
+		}
+		.words span i {
+			font-style: normal;
+			color: #005cb9;
+		}
+		input {
+			max-width: 500px;
+			width: 100%;
+			position: relative;
+			display: block;
+			padding: 12px;
+			font-size: 24px;
+			box-sizing: border-box;
+			border-radius: 0px 0px 3px 3pxx;
+			margin-top: 24px;
+			border: 1px solid rgba(0,0,0,.1);
+			margin: 0px auto;
+			display: block;
+			text-align: center;
+		}
+		input:focus, input:active {
+			outline: 0px;
+		}
+		.content {
+			font-size: 14px;
+			color: #666;
+			padding-top: 12px;
+			max-width: 500px;
+			margin: 0px auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="words">
+		
+	</div>
+	<input type="text" id="txtType">
+	<div class="content">
+		Timer: <span id="timer">60</span> | Correct letters: <span id="correctL">0</span> | Correct words: <span id="correctW">0</span>
+	</div>
+	<script>
+		$(document).ready(function() {
+			var words = ["the", "be", "to", "of", "and", "a", "in", "that", "have", "I", "it", "for", "not", "on", "with", "as", "you", "do", "at", "this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "what", "so", "up", "out", "if", "about", "who", "get", "which", "go", "me", "when", "make", "can", "like", "time", "no", "just", "him", "know", "take", "people", "into", "year", "your", "good", "some", "could", "them", "see", "other", "than", "then", "now", "look", "only", "come", "its", "over", "think", "also", "back", "after", "use", "two", "how", "our", "work", "first", "well", "way", "even", "new", "want", "because", "any", "these", "give", "day", "most", "us"];
+			for(var i in words) {
+				$(".words").append('<span>'+words[i]+'</span>');
+			}
+			$(".words span").first().addClass("selected");
+		});
+		var correctL = 0, correctW = 0, started = false, timer = 60;
+		$("#txtType").keyup(function(event) {
+			var val = $(this).val();
+			var selected = $(".words span.selected");
+			var word = selected.text();
+		
+			if(event.which == 32) {
+				if(word.length == selected.find("i").text().length && word.length != 0)
+					correctW++;
+				$(this).val(val.split(" ")[1]);
+				selected.removeClass("selected").next().addClass("selected");
+
+				var newSelected = selected.next();
+				if(newSelected.position().top > 75)
+					$(".words").scrollTop($(".words").scrollTop()+50);
+			} else if(word.indexOf(val) == 0) {
+				if(!started) {
+					started = true;
+					var interval = setInterval(function() {
+						$("#timer").html(timer--);
+						if(timer == -1) {
+							clearInterval(interval);
+							$("#txtType").attr("disabled", "");
+							$("#txtType").val("");
+						}
+					}, 1000)
+				}
+				correctL = (event.which == 8) ? ((val.length == 0) ? 0 : correctL-1) : correctL+1;
+				selected.html("<i>"+word.substring(0,val.length)+"</i>"+word.substring(val.length));
+			}
+			$("#correctL").html(correctL);
+			$("#correctW").html(correctW);
+		})
+	</script>
+</body>
+</html>
